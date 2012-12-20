@@ -64,8 +64,6 @@ public class View extends JFrame {
 		submitButton.setPreferredSize(new Dimension(d.width,
 				usernameLabel.getPreferredSize().height));
 		
-		
-		
 		// Add components to main panel
 		mainPanel.add(usernameLabel);
 		mainPanel.add(usernameField);
