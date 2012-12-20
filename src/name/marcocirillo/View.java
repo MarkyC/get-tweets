@@ -15,6 +15,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 
 public class View extends JFrame {
 	
@@ -30,6 +31,10 @@ public class View extends JFrame {
 	public View(String title) throws HeadlessException {
 		super(title);		// invoke super constructor
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		// Set OS look and feel
+		try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
+		catch (Exception e)	{} 	// Leave LaF as default Java LaF on error
 		
 		// build and set the menu bar
 		this.setJMenuBar(this.buildMenu());
