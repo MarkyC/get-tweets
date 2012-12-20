@@ -2,12 +2,16 @@ package name.marcocirillo;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -67,18 +71,11 @@ public class View extends JFrame {
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		
-		// Adjust component sizes
-		Dimension d = new Dimension();
-		d.width = this.getLargestComponentWidth();
-		
-		// Use the calculated largest width and the components preferred height to 
-		// adjust component preferred size
-		usernameLabel.setPreferredSize(new Dimension(d.width,
-					usernameLabel.getPreferredSize().height));
-		usernameField.setPreferredSize(new Dimension(d.width,
-				usernameLabel.getPreferredSize().height));
-		submitButton.setPreferredSize(new Dimension(d.width,
-				usernameLabel.getPreferredSize().height));
+		Font font = usernameField.getFont();
+		font = new Font(font.getFamily(), font.getStyle(), 20);
+		usernameLabel.setFont(font);
+		usernameField.setFont(font);
+		submitButton.setFont(font);
 		
 		// Add components to main panel
 		mainPanel.add(usernameLabel);
@@ -88,6 +85,15 @@ public class View extends JFrame {
 		// Add main panel to this content pane
 		this.getContentPane().add(mainPanel, BorderLayout.CENTER);
 		
+		
+	}
+
+	private int getDisplayedSize(JComponent comp) {
+		return comp.getPreferredSize().height + 
+				comp.getInsets().top +
+				comp.getInsets().left +
+				comp.getInsets().bottom +
+				comp.getInsets().right ;
 	}
 
 	/** Returns the largest width between usernameLabel, usernameField 
