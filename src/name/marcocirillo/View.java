@@ -50,6 +50,8 @@ public class View extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Model currentUser = new Model(usernameField.getText());
+				currentUser.setIgnoreRT(true);
+				currentUser.setIgnoreSP(true);
 				
 				if (currentUser.userExists()) {
 					new ModelThread(currentUser).start();
@@ -83,30 +85,6 @@ public class View extends JFrame {
 		
 	}
 
-	/*private int getDisplayedSize(JComponent comp) {
-		return comp.getPreferredSize().height + 
-				comp.getInsets().top +
-				comp.getInsets().left +
-				comp.getInsets().bottom +
-				comp.getInsets().right ;
-	}*/
-
-	/** Returns the largest width between usernameLabel, usernameField 
-	 * and submitButton.
-	 *//*
-	private int getLargestComponentWidth() {
-		Dimension d = new Dimension();
-		
-		d.width = this.usernameLabel.getPreferredSize().width;
-		
-		if (this.usernameField.getPreferredSize().width > d.width) {
-			d.width = this.usernameField.getPreferredSize().width;
-		} else if (this.submitButton.getPreferredSize().width > d.width) {
-			d.width = this.submitButton.getPreferredSize().width;
-		}
-		
-		return d.width;
-	}*/
 
 	/** Builds a menu for this View */
 	private JMenuBar buildMenu() {

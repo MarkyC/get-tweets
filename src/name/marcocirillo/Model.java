@@ -6,7 +6,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import twitter4j.Paging;
 import twitter4j.Status;
@@ -23,12 +27,19 @@ public class Model {
 	private int maxStatuses;
 	private int statusPerPage;
 	
+	private boolean ignoreRT;
+	private boolean ignoreSP;
+	
 	PropertyChangeListener progressListener;
 
 	public Model(String username) {
 		this.username = username;		// Set username for this instance
 		
 		this.outputFile = buildOutWriter(username); // The writer that will write the out file
+		
+		// Initially set to not ignore sponsored and retweeted tweets
+		this.ignoreRT = false;
+		this.ignoreSP = false;
 		
 		
 		// Set our pagination properties via constants
@@ -53,6 +64,34 @@ public class Model {
 		
 	}
 	
+	/**
+	 * @return true if this Model is set to ignore retweets, false otherwise
+	 */
+	public boolean isIgnoreRT() {
+		return ignoreRT;
+	}
+
+	/**
+	 * @param ignoreRT - true if this Model is set to ignore retweets, false otherwise
+	 */
+	public void setIgnoreRT(boolean ignoreRT) {
+		this.ignoreRT = ignoreRT;
+	}
+
+	/**
+	 * @return true if this Model is set to ignore sponsored tweets, false otherwise
+	 */
+	public boolean isIgnoreSP() {
+		return ignoreSP;
+	}
+
+	/**
+	 * @param ignoreSP - true if this Model is set to sponsored tweets, false otherwise
+	 */
+	public void setIgnoreSP(boolean ignoreSP) {
+		this.ignoreSP = ignoreSP;
+	}
+
 	/**
 	 * Returns the specified username this class belongs to
 	 * @return the username this class belongs to
@@ -205,6 +244,8 @@ public class Model {
 			DebugCrash.printDebugInfo("Failed to get timeline", e);
 		}
 		
+		statuses = Collections.synchronizedList(statuses);
+		
 		return statuses;
 	}
 
@@ -213,12 +254,42 @@ public class Model {
 		BufferedWriter out = null;	// temporarily set writer to null
 		
 		try {
-			// Create output file TODO: make this based on entered username
 			out = new BufferedWriter(new FileWriter(username + ".txt"));
 		} catch (IOException e) {
 			DebugCrash.printDebugInfo("Could not write to output file", e);
 		}
 		
 		return out;
+	}
+
+	public static List<Status> removeRT(List<Status> statuses) {
+		for (Status status : statuses) {
+			if (status.getText().matches("RT")) {
+				statuses.remove(status);
+			}
+		}
+		return statuses;
+	}
+
+	public static List<Status> removeSP(List<Status> statuses) {
+		ListIterator<Status> it = statuses.listIterator(); 
+		while(it.hasNext()) {
+			Status status = it.next();
+			String statusText = status.getText().toLowerCase();
+			if (statusText.indexOf("#sp") != -1) it.remove();
+		}
+		
+		/*
+		for (Status status : statuses) {
+						
+			// Remove any tweets containing #sp (case insensitive)
+			Pattern p = Pattern.compile("#sp", Pattern.CASE_INSENSITIVE);
+			Matcher m = p.matcher(status.getText());
+			if (m.find()) {
+				System.out.println("Attemping to remove sp");
+				statuses.remove(status);
+			}
+		}*/
+		return statuses;
 	}
 }

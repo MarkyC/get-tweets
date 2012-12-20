@@ -23,6 +23,8 @@ public class ModelThread extends Thread /*SwingWorker<Float, Integer>*/ {
 		//this.oldProgress = 0;
 	}
 	
+	
+	
 	@Override
 	public void run() {
 		for (int i = 1; i < ((float) (model.getMaxStatuses()/model.getStatusPerPage())); i++) {
@@ -34,6 +36,14 @@ public class ModelThread extends Thread /*SwingWorker<Float, Integer>*/ {
 	        if (statuses == null) {
 	        	DebugCrash.printDebugInfo("Failed to get status list", 
 	        		new NullPointerException());
+	        }
+	        
+	        if (model.isIgnoreRT()) {
+	        	statuses = Model.removeRT(statuses);
+	        } 
+	        
+	        if (model.isIgnoreSP()) {
+	        	statuses = Model.removeSP(statuses);
 	        }
 	        		 
 	        model.writeStatusesToFile(statuses);
