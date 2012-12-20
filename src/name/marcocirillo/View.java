@@ -13,8 +13,10 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 public class View extends JFrame {
@@ -48,7 +50,16 @@ public class View extends JFrame {
 		submitButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Do nothing for now
+				Model currentUser = new Model(usernameField.getText());
+				
+				if (currentUser.userExists()) {
+					new ModelThread(currentUser).start();
+				} else {
+					printError("Invalid Username");
+					usernameField.setText("");
+				}
+				
+				
 			}
 		});
 		
@@ -127,6 +138,10 @@ public class View extends JFrame {
 		
 		return menuBar;
 		
+	}
+	
+	public void printError(String string) {
+		JOptionPane.showMessageDialog(this, string, "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
 }

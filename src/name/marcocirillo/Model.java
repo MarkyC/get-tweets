@@ -1,6 +1,7 @@
 package name.marcocirillo;
 
 import java.awt.Desktop;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -21,11 +22,14 @@ public class Model {
 	
 	private int maxStatuses;
 	private int statusPerPage;
+	
+	PropertyChangeListener progressListener;
 
 	public Model(String username) {
 		this.username = username;		// Set username for this instance
 		
 		this.outputFile = buildOutWriter(username); // The writer that will write the out file
+		
 		
 		// Set our pagination properties via constants
 		this.maxStatuses = Constants.MAX_STATUSES;
@@ -106,13 +110,22 @@ public class Model {
 	 */
 	public void setStatusPerPage(int statusPerPage) {
 		this.statusPerPage = statusPerPage;
-	}	
+	}
+	
+	public boolean userExists() {
+		boolean userExists = false;
+		try{
+		  twitter.showUser(username);
+		  userExists = true;
+		}catch(TwitterException te) {}
+		
+		return userExists;
+	}
 	
 	/**
 	 * Prints twitter statuses for the specified username this class belongs to
 	 */
 	public void retrieveAndWriteStatuses() {
-		
 		for (int i = 1; i < ((float) (this.maxStatuses/this.statusPerPage)); i++) {
 	     	// Get the next 100 statuses from the specified user 
 	        List<Status> statuses = null;
@@ -125,7 +138,7 @@ public class Model {
 	        }
 	        		 
 	        this.writeStatusesToFile(statuses);
-	         
+	        
 	        this.updateProgress((float) this.statusPerPage / this.maxStatuses);
 	    }
 	    
@@ -134,6 +147,17 @@ public class Model {
 		this.showUserOutput();
 	}
 
+	private void updateProgress(float f) {
+		// TODO: make progress dialog
+		//this.oldProgress = f;
+	}
+	
+	/** Closes the output file and displays to the user */
+	public void finishAndShow() {
+		this.closeOutputFile();
+		this.showUserOutput();
+	}
+	
 	private void closeOutputFile() {
 		try {
 			outputFile.flush();
@@ -151,8 +175,11 @@ public class Model {
 		}
 	}
 
-
-	private void writeStatusesToFile(List<Status> statuses) {
+	/**
+	 * Writes a List<Status to the output file
+	 * @param statuses - statuses to write into the output file
+	 */
+	public void writeStatusesToFile(List<Status> statuses) {
 		for (Status status : statuses) {
         	try {
 				outputFile.append(status.getText());
@@ -164,23 +191,21 @@ public class Model {
         }
 	}
 
-
-	private List<Status> getStatusPageList(int index) {
+	/**
+	 * Returns List<Status> containing statuses from index to index + statusPerPage
+	 * @param index - starting index
+	 * @return List<Status> containing statuses from index to index + statusPerPage
+	 */
+	public List<Status> getStatusPageList(int index) {
 		List<Status> statuses = null;
 		
 		try {
-			statuses = twitter.getUserTimeline(username, new Paging(index, 100));
+			statuses = twitter.getUserTimeline(username, new Paging(index, this.statusPerPage));
 		} catch (TwitterException e) {
 			DebugCrash.printDebugInfo("Failed to get timeline", e);
 		}
 		
 		return statuses;
-	}
-
-
-	private void updateProgress(float f) {
-		// TODO Auto-generated method stub
-		
 	}
 
 
