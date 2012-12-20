@@ -1,17 +1,13 @@
 package name.marcocirillo;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -20,7 +16,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 public class View extends JFrame {
@@ -88,17 +83,17 @@ public class View extends JFrame {
 		
 	}
 
-	private int getDisplayedSize(JComponent comp) {
+	/*private int getDisplayedSize(JComponent comp) {
 		return comp.getPreferredSize().height + 
 				comp.getInsets().top +
 				comp.getInsets().left +
 				comp.getInsets().bottom +
 				comp.getInsets().right ;
-	}
+	}*/
 
 	/** Returns the largest width between usernameLabel, usernameField 
 	 * and submitButton.
-	 */
+	 *//*
 	private int getLargestComponentWidth() {
 		Dimension d = new Dimension();
 		
@@ -111,7 +106,7 @@ public class View extends JFrame {
 		}
 		
 		return d.width;
-	}
+	}*/
 
 	/** Builds a menu for this View */
 	private JMenuBar buildMenu() {

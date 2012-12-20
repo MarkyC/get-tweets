@@ -2,7 +2,7 @@ package name.marcocirillo;
 
 import java.util.List;
 
-import javax.swing.SwingWorker;
+//import javax.swing.SwingWorker;
 
 import twitter4j.Status;
 
@@ -10,7 +10,7 @@ public class ModelThread extends Thread /*SwingWorker<Float, Integer>*/ {
 	
 	private Model model;
 	
-	private float oldProgress;
+	//private float oldProgress;
 	
 	/**
 	 * Runs a Model object in a separate thread
@@ -20,7 +20,7 @@ public class ModelThread extends Thread /*SwingWorker<Float, Integer>*/ {
 		super();
 		
 		this.model = model;		// set this model to the passed model
-		this.oldProgress = 0;
+		//this.oldProgress = 0;
 	}
 	
 	@Override
@@ -39,7 +39,7 @@ public class ModelThread extends Thread /*SwingWorker<Float, Integer>*/ {
 	        model.writeStatusesToFile(statuses);
 	        
 	        //this.updateProgress((float) model.getStatusPerPage() / model.getMaxStatuses());
-	        this.oldProgress = (float) model.getStatusPerPage() / model.getMaxStatuses();
+	        //this.oldProgress = (float) model.getStatusPerPage() / model.getMaxStatuses();
 	    }
 	    
 	  
