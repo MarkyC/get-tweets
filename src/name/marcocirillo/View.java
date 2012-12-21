@@ -126,8 +126,8 @@ public class View extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JCheckBox rt = (JCheckBox) e.getSource();
-				
-				rt.setSelected(!removeRT);	// toggle selection
+				removeRT = !removeRT;
+				rt.setSelected(removeRT);	// toggle selection
 			}
 		});
 		
@@ -135,8 +135,8 @@ public class View extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JCheckBox sp = (JCheckBox) e.getSource();
-				
-				sp.setSelected(!removeSP);	// toggle selection
+				removeSP = !removeSP;
+				sp.setSelected(removeSP);	// toggle selection
 			}
 		});
 		

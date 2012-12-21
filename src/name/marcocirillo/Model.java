@@ -20,7 +20,8 @@ import twitter4j.TwitterFactory;
 
 public class Model {
 	
-	private BufferedWriter outputFile;
+	private File outputFile;
+	private BufferedWriter outputFileWriter;
 	private String username;
 	private Twitter twitter;
 	
@@ -35,7 +36,7 @@ public class Model {
 	public Model(String username) {
 		this.username = username;		// Set username for this instance
 		
-		this.outputFile = buildOutWriter(username); // The writer that will write the out file
+		this.outputFileWriter = buildOutWriter(username); // The writer that will write the out file
 		
 		// Initially set to not ignore sponsored and retweeted tweets
 		this.ignoreRT = false;
@@ -46,7 +47,7 @@ public class Model {
 		this.maxStatuses = Constants.MAX_STATUSES;
 		this.statusPerPage = Constants.STATUS_PER_PAGE;
 				
-		if (outputFile == null) {
+		if (outputFileWriter == null) {
 			// Should never be reached, but might as well make double sure, right?
 			DebugCrash.printDebugInfo("Could not create output file",
 										new NullPointerException());
@@ -108,13 +109,13 @@ public class Model {
 		this.username = username;
 		
 		try {
-			this.outputFile.close();
+			this.outputFileWriter.close();
 		
 		// It's okay if we can't close the other file, the program can still run correctly
 		} catch (IOException e) {} 
 		
 		// rebuild output file based on new username
-		this.outputFile = this.buildOutWriter(username);	
+		this.outputFileWriter = this.buildOutWriter(username);	
 	}
 	
 	/**
@@ -182,7 +183,7 @@ public class Model {
 	    }
 	    
 	  
-		this.closeOutputFile();
+		this.closeoutputFileWriter();
 		this.showUserOutput();
 	}
 
@@ -193,14 +194,14 @@ public class Model {
 	
 	/** Closes the output file and displays to the user */
 	public void finishAndShow() {
-		this.closeOutputFile();
+		this.closeoutputFileWriter();
 		this.showUserOutput();
 	}
 	
-	private void closeOutputFile() {
+	private void closeoutputFileWriter() {
 		try {
-			outputFile.flush();
-			outputFile.close();
+			outputFileWriter.flush();
+			outputFileWriter.close();
 		} catch (IOException e) {
 			DebugCrash.printDebugInfo("Could not write to output file", e);
 		}
@@ -221,8 +222,8 @@ public class Model {
 	public void writeStatusesToFile(List<Status> statuses) {
 		for (Status status : statuses) {
         	try {
-				outputFile.append(status.getText());
-				outputFile.newLine();
+				outputFileWriter.append(status.getText());
+				outputFileWriter.newLine();
 			} catch (IOException e) {
 				// We can't write to the output file, tell the user something is wrong
 	        	DebugCrash.printDebugInfo("Could not write to output file", e);
@@ -253,8 +254,17 @@ public class Model {
 	private BufferedWriter buildOutWriter(String username) {
 		BufferedWriter out = null;	// temporarily set writer to null
 		
+		this.outputFile = new File(username + ".txt");
+		
+		// If outputFile exists, let's make a new File so as to not overwrite the tweets
+		int i = 1;
+		while(this.outputFile.exists()) {
+			this.outputFile = new File(username + '-'+ i++ +".txt");
+		}
+		
+		
 		try {
-			out = new BufferedWriter(new FileWriter(username + ".txt"));
+			out = new BufferedWriter(new FileWriter(this.outputFile));
 		} catch (IOException e) {
 			DebugCrash.printDebugInfo("Could not write to output file", e);
 		}
@@ -262,6 +272,11 @@ public class Model {
 		return out;
 	}
 
+	/**
+	 * Attempts to remove retweets from a Status List
+	 * @param statuses - The list of statuses to remove the retweets from
+	 * @return A new Status List with the retweets removed
+	 */
 	public static List<Status> removeRT(List<Status> statuses) {
 		ListIterator<Status> it = statuses.listIterator(); 
 		while(it.hasNext()) {
@@ -278,7 +293,16 @@ public class Model {
 		}
 		return statuses;
 	}
-
+	
+	/** Attempts to remove sponsored ads from a Status List
+	 * Currently checks for the following (Case insensitive):
+	 * <ul>
+	 * <li>#SPON</li>
+	 * <li>#SP</li>
+	 * </ul>
+	 * @param statuses - The list of statuses to remove the sponsored ads from
+	 * @return A new Status List with the sponsored ads removed
+	 */
 	public static List<Status> removeSP(List<Status> statuses) {
 		ListIterator<Status> it = statuses.listIterator(); 
 		while(it.hasNext()) {
