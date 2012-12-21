@@ -209,7 +209,7 @@ public class Model {
 
 	private void showUserOutput() {
 		try {
-			Desktop.getDesktop().edit(new File(username + ".txt"));
+			Desktop.getDesktop().edit(outputFile);
 		} catch (IOException e) {
 			DebugCrash.printDebugInfo("Could not open output file", e);
 		}
@@ -258,11 +258,15 @@ public class Model {
 		
 		// If outputFile exists, let's make a new File so as to not overwrite the tweets
 		int i = 1;
-		while(this.outputFile.exists()) {
-			this.outputFile = new File(username + '-'+ i++ +".txt");
+		try {
+			while(!this.outputFile.createNewFile()) {
+				this.outputFile = new File(username + '-'+ i++ +".txt");
+			}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			DebugCrash.printDebugInfo("Could not create output file", e1);
 		}
-		
-		
+				
 		try {
 			out = new BufferedWriter(new FileWriter(this.outputFile));
 		} catch (IOException e) {

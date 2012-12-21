@@ -20,6 +20,8 @@ public class Constants {
 	public static final int MAX_STATUSES = 3200;	// Max twitter statuses we can retrieve is 3200
 	public static final int STATUS_PER_PAGE = 100;	// 100 statuses per page (100 * 32 = 3200)
 
+	public static final String CRASH_WINDOW_TITLE = "Crash Report";
+
 	
 
 }
