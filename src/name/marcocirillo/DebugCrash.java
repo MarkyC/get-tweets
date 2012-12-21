@@ -1,9 +1,11 @@
 package name.marcocirillo;
 
+import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 public class DebugCrash {
@@ -24,31 +26,14 @@ public class DebugCrash {
 		JFrame crashWindow = new JFrame(Constants.CRASH_WINDOW_TITLE);
 		
 		// Create textarea to display error message
-		JTextArea errorArea = new JTextArea(errMsg + "\n" + error.getMessage(), 10, 30);
-		
+		JTextArea errorArea = new JTextArea(errMsg + "\n" + error.getMessage(), 10, 10);
 		errorArea.setWrapStyleWord(true);
-		crashWindow.add(errorArea);
-		crashWindow.addWindowListener(new WindowListener() {
-
-			// exit when window is closed
-			@Override
-			public void windowClosed(WindowEvent arg0) {System.exit(-1);} 
-
-			// Do nothing otherwise
-			@Override
-			public void windowClosing(WindowEvent arg0) {}
-			@Override
-			public void windowDeactivated(WindowEvent arg0) {}
-			@Override
-			public void windowDeiconified(WindowEvent arg0) {}
-			@Override
-			public void windowIconified(WindowEvent arg0) {}
-			@Override
-			public void windowOpened(WindowEvent arg0) {}
-			@Override
-			public void windowActivated(WindowEvent arg0) {}
-		});
-		//crashWindow.pack();
+		
+		JScrollPane scrollPane = new JScrollPane(errorArea);
+		crashWindow.getContentPane().add(scrollPane);
+		
+		crashWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		crashWindow.setSize(new Dimension(500,300));
 		crashWindow.setLocationRelativeTo(null);
 		crashWindow.setVisible(true);
 		
