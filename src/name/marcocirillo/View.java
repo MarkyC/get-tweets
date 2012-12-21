@@ -6,10 +6,12 @@ import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -23,11 +25,15 @@ public class View extends JFrame {
 	/** Generated Serial Version ID */
 	private static final long serialVersionUID = -3036977808237399813L;
 
-	JLabel usernameLabel;
+	// Main GUI components
+	//private JLabel usernameLabel;
+	private JTextField usernameField;
+	private JButton submitButton;
 	
-	JTextField usernameField;
+	// Holds user defined values to remove or keep retweets or sponsored ads
+	private boolean removeRT;
+	private boolean removeSP;
 	
-	JButton submitButton;
 
 	public View(String title) throws HeadlessException {
 		super(title);		// invoke super constructor
@@ -41,17 +47,21 @@ public class View extends JFrame {
 		this.setJMenuBar(this.buildMenu());
 		
 		// Build main program components
-		this.usernameLabel = new JLabel(Constants.USERNAME_TEXT);
-		this.usernameField = new JTextField();
+		//this.usernameLabel = new JLabel(Constants.USERNAME_TEXT);
+		this.usernameField = new JTextField("", 10);
 		this.submitButton = new JButton(Constants.GET_TWEETS);
+		
+		// Keep retweets and sponsored ads in the file
+		this.removeRT = false;
+		this.removeSP = false;
 		
 		// Set up listener
 		submitButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Model currentUser = new Model(usernameField.getText());
-				currentUser.setIgnoreRT(true);
-				currentUser.setIgnoreSP(true);
+				currentUser.setIgnoreRT(removeRT);
+				currentUser.setIgnoreSP(removeSP);
 				
 				if (currentUser.userExists()) {
 					new ModelThread(currentUser).start();
@@ -64,25 +74,83 @@ public class View extends JFrame {
 			}
 		});
 		
-		// Build main panel and set layout
+		// Build main panel and set layout and border
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+		mainPanel.setBorder(BorderFactory.createTitledBorder(
+				BorderFactory.createEtchedBorder(), // border style
+				Constants.USERNAME_TEXT));			// border title
 		
+		// Beautify components by making font larger
 		Font font = usernameField.getFont();
 		font = new Font(font.getFamily(), font.getStyle(), 20);
-		usernameLabel.setFont(font);
+		Font smallerFont = (new Font(font.getFamily(), font.getStyle(), 14));
+		//usernameLabel.setFont(smallerFont);
 		usernameField.setFont(font);
-		submitButton.setFont(font);
+		submitButton.setFont(smallerFont);
+		
+		// beautify the submit button
+		JPanel submitButtonPanel = new JPanel();
+		submitButtonPanel.setLayout(new BoxLayout(submitButtonPanel, BoxLayout.X_AXIS));
+		submitButtonPanel.add(Box.createHorizontalGlue());
+		submitButtonPanel.add(submitButton);
+		submitButtonPanel.add(Box.createHorizontalGlue());
 		
 		// Add components to main panel
-		mainPanel.add(usernameLabel);
+		//mainPanel.add(usernameLabel);
 		mainPanel.add(usernameField);
-		mainPanel.add(submitButton);
+		mainPanel.add(submitButtonPanel);
+		//mainPanel.add(submitButton);
 		
 		// Add main panel to this content pane
 		this.getContentPane().add(mainPanel, BorderLayout.CENTER);
+		this.getContentPane().add(this.buildSettingsPanel(), BorderLayout.EAST);
 		
 		
+	}
+
+	/**
+	 * Builds a panel to hold the settings of the program, 
+	 * such as "remove RT's" and "remove sponsored ads".
+	 * @return A JPanel that allows the user to change settings
+	 */
+	private JPanel buildSettingsPanel() {
+		JPanel settingsPanel = new JPanel();	// The panel that will hold our settings
+		
+		// Build checkbox components
+		JCheckBox rtBox = new JCheckBox(Constants.REMOVE_RT_TEXT, false);
+		JCheckBox spBox = new JCheckBox(Constants.REMOVE_SP_TEXT, false);
+		
+		// Set up action listeners for checkboxes
+		rtBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JCheckBox rt = (JCheckBox) e.getSource();
+				
+				rt.setSelected(!removeRT);	// toggle selection
+			}
+		});
+		
+		spBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JCheckBox sp = (JCheckBox) e.getSource();
+				
+				sp.setSelected(!removeSP);	// toggle selection
+			}
+		});
+		
+		// Set layout for panel
+		settingsPanel.setLayout(new BoxLayout(settingsPanel,BoxLayout.Y_AXIS));
+		settingsPanel.setBorder(BorderFactory.createTitledBorder(
+				BorderFactory.createEtchedBorder(), // Border style
+				Constants.SETTINGS_TEXT));			// Border title
+		
+		// add components to panel
+		settingsPanel.add(rtBox);
+		settingsPanel.add(spBox);
+				
+		return settingsPanel;
 	}
 
 

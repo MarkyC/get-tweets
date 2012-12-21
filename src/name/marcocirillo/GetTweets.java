@@ -21,6 +21,7 @@ public class GetTweets {
 		View v = new View(Constants.WINDOW_TITLE);
 		v.setVisible(true);
 		v.setSize(v.getPreferredSize());
+		v.setResizable(false);
 		v.setLocationRelativeTo(null);		// center window
 	}
 

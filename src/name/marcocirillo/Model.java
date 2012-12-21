@@ -263,10 +263,18 @@ public class Model {
 	}
 
 	public static List<Status> removeRT(List<Status> statuses) {
-		for (Status status : statuses) {
-			if (status.getText().matches("RT")) {
-				statuses.remove(status);
-			}
+		ListIterator<Status> it = statuses.listIterator(); 
+		while(it.hasNext()) {
+			Status status = it.next();
+			String statusText = status.getText().toLowerCase();
+			
+			// Remove retweets 
+			Pattern p = Pattern.compile("(^|\\s)RT\\b", Pattern.CASE_INSENSITIVE);
+			Matcher m = p.matcher(statusText);
+			if (m.find()) {
+				System.out.println("Attemping to remove retweet: " + statusText);
+				it.remove();
+			} 
 		}
 		return statuses;
 	}
@@ -274,22 +282,26 @@ public class Model {
 	public static List<Status> removeSP(List<Status> statuses) {
 		ListIterator<Status> it = statuses.listIterator(); 
 		while(it.hasNext()) {
+			
 			Status status = it.next();
 			String statusText = status.getText().toLowerCase();
-			if (statusText.indexOf("#sp") != -1) it.remove();
-		}
-		
-		/*
-		for (Status status : statuses) {
-						
+			
 			// Remove any tweets containing #sp (case insensitive)
-			Pattern p = Pattern.compile("#sp", Pattern.CASE_INSENSITIVE);
-			Matcher m = p.matcher(status.getText());
+			Pattern p = Pattern.compile("(^|\\s)#SP\\b", Pattern.CASE_INSENSITIVE);
+			Matcher m = p.matcher(statusText);
 			if (m.find()) {
-				System.out.println("Attemping to remove sp");
-				statuses.remove(status);
-			}
-		}*/
+				System.out.println("Attemping to remove sponsored ad: " + statusText);
+				it.remove();
+			} 
+			
+			// Remove tweets containing #SPON (Case insensitive)
+			p = Pattern.compile("(^|\\s)#SPON\\b", Pattern.CASE_INSENSITIVE);
+			m = p.matcher(statusText);
+			if (m.find()) {
+				System.out.println("Attemping to remove sponsored ad: " + statusText);
+				it.remove();
+			} 
+		}
 		return statuses;
 	}
 }
