@@ -2,7 +2,7 @@ package name.marcocirillo;
 
 public class Constants {
 	
-	public static final String WINDOW_TITLE = "get-tweets 0.5";
+	public static final String WINDOW_TITLE = "get-tweets 0.6";
 	
 	// Menu Constants
 	public static final String FILE_TEXT = "File";
