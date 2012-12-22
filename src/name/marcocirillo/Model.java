@@ -31,6 +31,7 @@ public class Model {
 	private boolean ignoreRT;
 	private boolean ignoreSP;
 	private boolean ignoreConvo;
+	private boolean ignoreLinks;
 	
 	PropertyChangeListener progressListener;
 
@@ -43,6 +44,7 @@ public class Model {
 		this.ignoreRT = false;
 		this.ignoreSP = false;
 		this.ignoreConvo = false;
+		this.ignoreLinks = false;
 		
 		
 		// Set our pagination properties via constants
@@ -100,6 +102,21 @@ public class Model {
 	 */
 	public boolean isIgnoreConversations() {
 		return ignoreConvo;
+	}
+	
+	/**
+	 * @param removeConvo - true if this Model is set to ignore tweets with links, 
+	 * false otherwise
+	 */
+	public void setIgnoreLinks(boolean ignoreLinks) {
+		this.ignoreLinks = ignoreLinks;
+	}
+	
+	/**
+	 * @return true if this Model is set to ignore tweets with links, false otherwise
+	 */
+	public boolean isIgnoreLinks() {
+		return ignoreLinks;
 	}
 	
 	/**
@@ -325,6 +342,7 @@ public class Model {
 	 * <ul>
 	 * <li>#SPON</li>
 	 * <li>#SP</li>
+	 * <li>- sp</li>
 	 * </ul>
 	 * @param statuses - The list of statuses to remove the sponsored ads from
 	 * @return A new Status List with the sponsored ads removed
@@ -336,18 +354,15 @@ public class Model {
 			Status status = it.next();
 			String statusText = status.getText().toLowerCase();
 			
-			// Remove any tweets containing #sp (case insensitive)
-			Pattern p = Pattern.compile("(^|\\s)#SP\\b", Pattern.CASE_INSENSITIVE);
-			Matcher m = p.matcher(statusText);
-			if (m.find()) {
-				System.out.println("Attemping to remove sponsored ad: " + statusText);
-				it.remove();
-			} 
+			// build matchers to remove tweets (case insensitive)
+			Matcher m1 = Pattern.compile("(^|\\s)#SP\\b",	//containing #sp
+					Pattern.CASE_INSENSITIVE).matcher(statusText);
+			Matcher m2 = Pattern.compile("(^|\\s)#SPON\\b",	//containing #spon
+					Pattern.CASE_INSENSITIVE).matcher(statusText);
+			Matcher m3 = Pattern.compile("(^|\\s)- sp\\b",  //containing - sp
+					Pattern.CASE_INSENSITIVE).matcher(statusText);
 			
-			// Remove tweets containing #SPON (Case insensitive)
-			p = Pattern.compile("(^|\\s)#SPON\\b", Pattern.CASE_INSENSITIVE);
-			m = p.matcher(statusText);
-			if (m.find()) {
+			if (m1.find() || m2.find() || m3.find()) {
 				System.out.println("Attemping to remove sponsored ad: " + statusText);
 				it.remove();
 			} 
@@ -370,6 +385,33 @@ public class Model {
 			// Check for conversation by checking for @ sign
 			Pattern p = Pattern.compile("(^|\\s)@\\w+", Pattern.CASE_INSENSITIVE);
 			Matcher m = p.matcher(statusText);
+			if (m.find()) {
+				System.out.println("Attemping to remove conversation: " + statusText);
+			}
+		
+		}
+		
+		return statuses;
+	}
+	
+	/**
+	 * Attempts to remove tweets with links
+	 * @param statuses - The list of statuses to remove the tweets from
+	 * @return A new Status List with the tweets with links removed
+	 */
+	public static List<Status> removeLinks(List<Status> statuses) {
+		ListIterator<Status> it = statuses.listIterator(); 
+		
+		while(it.hasNext()) {
+			Status status = it.next();
+			String statusText = status.getText().toLowerCase();
+			
+			// Check for links
+			Matcher m = Pattern.compile(
+				// Magic regex taken from: 
+				// stackoverflow.com/questions/163360/regular-expresion-to-match-urls-in-java
+				"<\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]>", 
+				Pattern.CASE_INSENSITIVE).matcher(statusText);
 			if (m.find()) {
 				System.out.println("Attemping to remove conversation: " + statusText);
 			}
