@@ -387,6 +387,7 @@ public class Model {
 			Matcher m = p.matcher(statusText);
 			if (m.find()) {
 				System.out.println("Attemping to remove conversation: " + statusText);
+				it.remove();
 			}
 		
 		}
@@ -413,7 +414,8 @@ public class Model {
 				"<\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]>", 
 				Pattern.CASE_INSENSITIVE).matcher(statusText);
 			if (m.find()) {
-				System.out.println("Attemping to remove conversation: " + statusText);
+				System.out.println("Attemping to remove tweet with link: " + statusText);
+				it.remove();
 			}
 		
 		}
