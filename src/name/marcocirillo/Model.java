@@ -255,8 +255,14 @@ public class Model {
 	public void writeStatusesToFile(List<Status> statuses) {
 		for (Status status : statuses) {
         	try {
-				outputFileWriter.append(status.getText());
-				outputFileWriter.newLine();
+        		String statusText = status.getText();
+				if (!statusText.equals("")) {
+				// status not blank, write to file
+					outputFileWriter.append(
+							statusText.replaceAll("\\r\\n|\\r|\\n", // replace newline
+									" "));							// with space
+					outputFileWriter.newLine();
+				}
 			} catch (IOException e) {
 				// We can't write to the output file, tell the user something is wrong
 	        	DebugCrash.printDebugInfo("Could not write to output file", e);
