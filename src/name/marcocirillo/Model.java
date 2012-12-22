@@ -416,7 +416,7 @@ public class Model {
 			if (m.find()) {
 				System.out.println("Attemping to remove tweet with link: " + statusText);
 				it.remove();
-			}
+			} 
 		
 		}
 		

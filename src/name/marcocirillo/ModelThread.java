@@ -49,6 +49,10 @@ public class ModelThread extends Thread /*SwingWorker<Float, Integer>*/ {
 	        if (model.isIgnoreConversations()) {
 	        	statuses = Model.removeConversations(statuses);
 	        }
+	        
+	        if (model.isIgnoreLinks()) {
+	        	statuses = Model.removeLinks(statuses);
+	        }
 	        		 
 	        model.writeStatusesToFile(statuses);
 	        
