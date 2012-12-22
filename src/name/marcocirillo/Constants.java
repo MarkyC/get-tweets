@@ -16,6 +16,7 @@ public class Constants {
 	public static final String SETTINGS_TEXT = "Settings";
 	public static final String REMOVE_RT_TEXT = "Remove retweets";
 	public static final String REMOVE_SP_TEXT = "Remove sponsored ads";
+	public static final String REMOVE_CONVERSATION_TEXT = "Remove Conversations";
 
 	public static final int MAX_STATUSES = 3200;	// Max twitter statuses we can retrieve is 3200
 	public static final int STATUS_PER_PAGE = 100;	// 100 statuses per page (100 * 32 = 3200)

@@ -33,6 +33,7 @@ public class View extends JFrame {
 	// Holds user defined values to remove or keep retweets or sponsored ads
 	private boolean removeRT;
 	private boolean removeSP;
+	private boolean removeConvo;
 	
 
 	public View(String title) throws HeadlessException {
@@ -54,6 +55,7 @@ public class View extends JFrame {
 		// Keep retweets and sponsored ads in the file
 		this.removeRT = false;
 		this.removeSP = false;
+		this.removeConvo = false;
 		
 		// Set up listener
 		submitButton.addActionListener(new ActionListener() {
@@ -62,6 +64,7 @@ public class View extends JFrame {
 				Model currentUser = new Model(usernameField.getText());
 				currentUser.setIgnoreRT(removeRT);
 				currentUser.setIgnoreSP(removeSP);
+				currentUser.setIgnoreConversations(removeConvo);
 				
 				if (currentUser.userExists()) {
 					new ModelThread(currentUser).start();
@@ -120,6 +123,7 @@ public class View extends JFrame {
 		// Build checkbox components
 		JCheckBox rtBox = new JCheckBox(Constants.REMOVE_RT_TEXT, false);
 		JCheckBox spBox = new JCheckBox(Constants.REMOVE_SP_TEXT, false);
+		JCheckBox convoBox = new JCheckBox(Constants.REMOVE_CONVERSATION_TEXT, false);
 		
 		// Set up action listeners for checkboxes
 		rtBox.addActionListener(new ActionListener() {
@@ -140,6 +144,15 @@ public class View extends JFrame {
 			}
 		});
 		
+		convoBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JCheckBox c = (JCheckBox) e.getSource();
+				removeConvo = !removeConvo;
+				c.setSelected(removeConvo);	// toggle selection
+			}
+		});
+		
 		// Set layout for panel
 		settingsPanel.setLayout(new BoxLayout(settingsPanel,BoxLayout.Y_AXIS));
 		settingsPanel.setBorder(BorderFactory.createTitledBorder(
@@ -149,6 +162,7 @@ public class View extends JFrame {
 		// add components to panel
 		settingsPanel.add(rtBox);
 		settingsPanel.add(spBox);
+		settingsPanel.add(convoBox);
 				
 		return settingsPanel;
 	}

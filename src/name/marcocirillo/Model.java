@@ -30,6 +30,7 @@ public class Model {
 	
 	private boolean ignoreRT;
 	private boolean ignoreSP;
+	private boolean ignoreConvo;
 	
 	PropertyChangeListener progressListener;
 
@@ -41,6 +42,7 @@ public class Model {
 		// Initially set to not ignore sponsored and retweeted tweets
 		this.ignoreRT = false;
 		this.ignoreSP = false;
+		this.ignoreConvo = false;
 		
 		
 		// Set our pagination properties via constants
@@ -87,10 +89,24 @@ public class Model {
 	}
 
 	/**
-	 * @param ignoreSP - true if this Model is set to sponsored tweets, false otherwise
+	 * @param ignoreSP - true if this Model is set to ignore sponsored tweets, false otherwise
 	 */
 	public void setIgnoreSP(boolean ignoreSP) {
 		this.ignoreSP = ignoreSP;
+	}
+	
+	/**
+	 * @return true if this Model is set to ignore conversations, false otherwise
+	 */
+	public boolean isIgnoreConversations() {
+		return ignoreConvo;
+	}
+	
+	/**
+	 * @param removeConvo - true if this Model is set to ignore conversations, false otherwise
+	 */
+	public void setIgnoreConversations(boolean ignoreConvo) {
+		this.ignoreConvo = ignoreConvo;
 	}
 
 	/**
@@ -287,14 +303,20 @@ public class Model {
 			Status status = it.next();
 			String statusText = status.getText().toLowerCase();
 			
-			// Remove retweets 
-			Pattern p = Pattern.compile("(^|\\s)RT\\b", Pattern.CASE_INSENSITIVE);
-			Matcher m = p.matcher(statusText);
-			if (m.find()) {
-				System.out.println("Attemping to remove retweet: " + statusText);
+			if (status.isRetweet()) {
+			// Most clients set this field
 				it.remove();
-			} 
+			} else {
+			// Manually check for retweet if field not set
+				Pattern p = Pattern.compile("(^|\\s)RT\\b", Pattern.CASE_INSENSITIVE);
+				Matcher m = p.matcher(statusText);
+				if (m.find()) {
+					System.out.println("Attemping to remove retweet: " + statusText);
+					it.remove();
+				} 
+			}
 		}
+		
 		return statuses;
 	}
 	
@@ -332,4 +354,29 @@ public class Model {
 		}
 		return statuses;
 	}
+	
+	/**
+	 * Attempts to remove conversations from tweets (checks for @ sign)
+	 * @param statuses - The list of statuses to remove the conversations from
+	 * @return A new Status List with the conversations removed
+	 */
+	public static List<Status> removeConversations(List<Status> statuses) {
+		ListIterator<Status> it = statuses.listIterator(); 
+		
+		while(it.hasNext()) {
+			Status status = it.next();
+			String statusText = status.getText().toLowerCase();
+			
+			// Check for conversation by checking for @ sign
+			Pattern p = Pattern.compile("(^|\\s)@\\w+", Pattern.CASE_INSENSITIVE);
+			Matcher m = p.matcher(statusText);
+			if (m.find()) {
+				System.out.println("Attemping to remove conversation: " + statusText);
+			}
+		
+		}
+		
+		return statuses;
+	}
+
 }
