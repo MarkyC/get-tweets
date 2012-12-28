@@ -2,7 +2,7 @@ package name.marcocirillo;
 
 public class Constants {
 	
-	public static final String WINDOW_TITLE = "get-tweets 0.7";
+	public static final String WINDOW_TITLE = "get-tweets 1.0";
 	
 	// Menu Constants
 	public static final String FILE_TEXT = "File";
@@ -23,6 +23,8 @@ public class Constants {
 	public static final int STATUS_PER_PAGE = 100;	// 100 statuses per page (100 * 32 = 3200)
 
 	public static final String CRASH_WINDOW_TITLE = "Crash Report";
+	
+	public static final String DOWNLOADING_TEXT = "Download tweets for user";
 
 	
 

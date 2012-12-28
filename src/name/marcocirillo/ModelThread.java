@@ -27,6 +27,7 @@ public class ModelThread extends Thread /*SwingWorker<Float, Integer>*/ {
 	
 	@Override
 	public void run() {
+		ProgressWindow progressWindow = new ProgressWindow(model.getUsername());
 		for (int i = 1; i < ((float) (model.getMaxStatuses()/model.getStatusPerPage())); i++) {
 	     	// Get the next 100 statuses from the specified user 
 	        List<Status> statuses = null;
@@ -56,12 +57,14 @@ public class ModelThread extends Thread /*SwingWorker<Float, Integer>*/ {
 	        		 
 	        model.writeStatusesToFile(statuses);
 	        
-	        //this.updateProgress((float) model.getStatusPerPage() / model.getMaxStatuses());
-	        //this.oldProgress = (float) model.getStatusPerPage() / model.getMaxStatuses();
+	        // ex: (2 * 100) / 3200 = 0.0625 * 100 = 6.25%
+	        float progress = ((float) (i * model.getStatusPerPage()) / model.getMaxStatuses()) * 100;
+	        progressWindow.setProgress((int) progress);
+	        
 	    }
 	    
-	  
-		model.finishAndShow();
+		progressWindow.dispose();	// get rid of the progress window
+		model.finishAndShow();		// show the user the tweets
 	}
 
 	/*
