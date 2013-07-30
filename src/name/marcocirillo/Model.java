@@ -6,7 +6,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.regex.Matcher;
@@ -32,6 +35,8 @@ public class Model {
 	private boolean ignoreSP;
 	private boolean ignoreConvo;
 	private boolean ignoreLinks;
+	private boolean printTime;
+
 	
 	PropertyChangeListener progressListener;
 
@@ -124,6 +129,20 @@ public class Model {
 	 */
 	public void setIgnoreConversations(boolean ignoreConvo) {
 		this.ignoreConvo = ignoreConvo;
+	}
+	
+	/**
+	 * @return true if this Model is set to print timestamps, false otherwise
+	 */
+	public boolean isPrintTime() {
+		return this.printTime;
+	}
+	
+	/**
+	 * @param printTime - true if this Model is set to print timestamps, false otherwise
+	 */
+	public void setPrintTime(boolean printTime) {
+		this.printTime = printTime;
 	}
 
 	/**
@@ -258,6 +277,9 @@ public class Model {
         		String statusText = status.getText();
 				if (!statusText.equals("")) {
 				// status not blank, write to file
+					
+					if (printTime) printTime(status);
+					
 					outputFileWriter.append(
 							statusText.replaceAll("\\r\\n|\\r|\\n", // replace newline
 									" "));							// with space
@@ -268,6 +290,13 @@ public class Model {
 	        	DebugCrash.printDebugInfo("Could not write to output file", e);
 			}
         }
+	}
+
+	private void printTime(Status status) throws IOException {
+		// TODO: allow user to customize the date format
+		DateFormat df 	= new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		String date 	= df.format(status.getCreatedAt());
+		outputFileWriter.append("[" + date +"] ");
 	}
 
 	/**
@@ -428,5 +457,6 @@ public class Model {
 		
 		return statuses;
 	}
+
 
 }

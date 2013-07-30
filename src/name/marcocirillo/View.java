@@ -35,6 +35,7 @@ public class View extends JFrame {
 	private boolean removeSP;
 	private boolean removeConvo;
 	private boolean removeLinks;
+	private boolean printTime;
 	
 
 	public View(String title) throws HeadlessException {
@@ -54,20 +55,22 @@ public class View extends JFrame {
 		this.submitButton = new JButton(Constants.GET_TWEETS);
 		
 		// Keep retweets and sponsored ads in the file
-		this.removeRT = false;
-		this.removeSP = false;
-		this.removeConvo = false;
-		this.removeLinks = false;
+		this.removeRT 		= false;
+		this.removeSP	 	= false;
+		this.removeConvo 	= false;
+		this.removeLinks 	= false;
+		this.printTime 		= false;
 		
 		// Set up listener
 		submitButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Model currentUser = new Model(usernameField.getText());
-				currentUser.setIgnoreRT(removeRT);
-				currentUser.setIgnoreSP(removeSP);
-				currentUser.setIgnoreConversations(removeConvo);
-				currentUser.setIgnoreLinks(removeLinks);
+				Model currentUser = new Model( usernameField.getText() );
+				currentUser.setIgnoreRT( removeRT );
+				currentUser.setIgnoreSP( removeSP );
+				currentUser.setIgnoreConversations( removeConvo );
+				currentUser.setIgnoreLinks( removeLinks );
+				currentUser.setPrintTime( printTime );
 				
 				if (currentUser.userExists()) {
 					new ModelThread(currentUser).start();
@@ -124,50 +127,56 @@ public class View extends JFrame {
 		JPanel settingsPanel = new JPanel();	// The panel that will hold our settings
 		
 		// Build checkbox components
-		JCheckBox rtBox = new JCheckBox(Constants.REMOVE_RT_TEXT, false);
-		JCheckBox spBox = new JCheckBox(Constants.REMOVE_SP_TEXT, false);
-		JCheckBox convoBox = new JCheckBox(Constants.REMOVE_CONVERSATION_TEXT, false);
-		JCheckBox linkBox = new JCheckBox(Constants.REMOVE_LINK_TEXT, false);
+		JCheckBox rtBox		= new JCheckBox( Constants.REMOVE_RT_TEXT, false );
+		JCheckBox spBox 	= new JCheckBox( Constants.REMOVE_SP_TEXT, false );
+		JCheckBox convoBox 	= new JCheckBox( Constants.REMOVE_CONVERSATION_TEXT, false );
+		JCheckBox linkBox 	= new JCheckBox( Constants.REMOVE_LINK_TEXT, false );
+		JCheckBox timeBox 	= new JCheckBox( Constants.PRINT_TIME_TEXT, false);
 		
 		// Set up action listeners for checkboxes
 		rtBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JCheckBox rt = (JCheckBox) e.getSource();
 				removeRT = !removeRT;
-				rt.setSelected(removeRT);	// toggle selection
+				( ( JCheckBox ) e.getSource() ).setSelected( removeRT );	// toggle selection
 			}
 		});
 		
 		spBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JCheckBox sp = (JCheckBox) e.getSource();
 				removeSP = !removeSP;
-				sp.setSelected(removeSP);	// toggle selection
+				( ( JCheckBox ) e.getSource() ).setSelected( removeSP );	// toggle selection
 			}
 		});
 		
 		convoBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JCheckBox c = (JCheckBox) e.getSource();
 				removeConvo = !removeConvo;
-				c.setSelected(removeConvo);	// toggle selection
+				( ( JCheckBox ) e.getSource() ).setSelected( removeConvo );	// toggle selection
 			}
 		});
 		
 		linkBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JCheckBox c = (JCheckBox) e.getSource();
 				removeLinks = !removeLinks;
-				c.setSelected(removeLinks);	// toggle selection
+				( ( JCheckBox ) e.getSource() ).setSelected( removeLinks );	// toggle selection
+			}
+		});
+		
+		timeBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printTime = !printTime;
+				( ( JCheckBox ) e.getSource() ).setSelected( printTime );	// toggle selection
 			}
 		});
 		
 		// Set layout for panel
-		settingsPanel.setLayout(new BoxLayout(settingsPanel,BoxLayout.Y_AXIS));
+		//settingsPanel.setLayout(new BoxLayout(settingsPanel,BoxLayout.Y_AXIS));
+		settingsPanel.setLayout( new java.awt.GridLayout( 3, 2 ) ); // 3 rows, 2 columns
 		settingsPanel.setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createEtchedBorder(), // Border style
 				Constants.SETTINGS_TEXT));			// Border title
@@ -177,6 +186,7 @@ public class View extends JFrame {
 		settingsPanel.add(spBox);
 		settingsPanel.add(convoBox);
 		settingsPanel.add(linkBox);
+		settingsPanel.add(timeBox);
 				
 		return settingsPanel;
 	}

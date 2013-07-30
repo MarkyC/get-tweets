@@ -1,8 +1,10 @@
 package name.marcocirillo;
 
+import javax.swing.Icon;
+
 public class Constants {
 	
-	public static final String WINDOW_TITLE = "get-tweets 1.0";
+	public static final String WINDOW_TITLE = "get-tweets 1.1";
 	
 	// Menu Constants
 	public static final String FILE_TEXT = "File";
@@ -18,6 +20,7 @@ public class Constants {
 	public static final String REMOVE_SP_TEXT = "Remove sponsored ads";
 	public static final String REMOVE_CONVERSATION_TEXT = "Remove conversations";
 	public static final String REMOVE_LINK_TEXT = "Remove tweets with links";
+	public static final String PRINT_TIME_TEXT = "Print time";
 	
 	public static final int MAX_STATUSES = 3200;	// Max twitter statuses we can retrieve is 3200
 	public static final int STATUS_PER_PAGE = 100;	// 100 statuses per page (100 * 32 = 3200)
