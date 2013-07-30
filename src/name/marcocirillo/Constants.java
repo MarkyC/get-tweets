@@ -1,7 +1,5 @@
 package name.marcocirillo;
 
-import javax.swing.Icon;
-
 public class Constants {
 	
 	public static final String WINDOW_TITLE = "get-tweets 1.1";
