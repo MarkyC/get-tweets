@@ -1,5 +1,6 @@
 package name.marcocirillo;
 
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 public class GetTweets {
@@ -23,7 +24,7 @@ public class GetTweets {
 		v.setSize(v.getPreferredSize());
 		v.setResizable(false);
 		v.setLocationRelativeTo(null);		// center window
+		v.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
-
 
 }

@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -12,6 +14,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -24,7 +27,7 @@ public class View extends JFrame {
 	
 	/** Generated Serial Version ID */
 	private static final long serialVersionUID = -3036977808237399813L;
-
+	private View instance;
 	// Main GUI components
 	//private JLabel usernameLabel;
 	private JTextField usernameField;
@@ -36,10 +39,18 @@ public class View extends JFrame {
 	private boolean removeConvo;
 	private boolean removeLinks;
 	private boolean printTime;
+	private boolean inReplyToScreenName;
+	private boolean inReplyToStatusId;
+	private boolean inReplyToUserId;
+	private boolean source;
+	private boolean statusId;
+	private boolean text;
+	private String delimiter;
 	
 
 	public View(String title) throws HeadlessException {
 		super(title);		// invoke super constructor
+		this.instance = this;
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		// Set OS look and feel
@@ -59,18 +70,32 @@ public class View extends JFrame {
 		this.removeSP	 	= false;
 		this.removeConvo 	= false;
 		this.removeLinks 	= false;
-		this.printTime 		= false;
+		this.printTime 		= true;
+		this.inReplyToScreenName = false;
+		this.inReplyToStatusId = false;
+		this.inReplyToUserId = false;
+		this.source = false;
+		this.statusId = false;
+		this.text = true;
+		this.delimiter = "§";
 		
 		// Set up listener
 		submitButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Model currentUser = new Model( usernameField.getText() );
+				Model currentUser = new Model( usernameField.getText(), instance);
 				currentUser.setIgnoreRT( removeRT );
 				currentUser.setIgnoreSP( removeSP );
 				currentUser.setIgnoreConversations( removeConvo );
 				currentUser.setIgnoreLinks( removeLinks );
 				currentUser.setPrintTime( printTime );
+				currentUser.setInReplyToScreenName(inReplyToScreenName);
+				currentUser.setInReplyToStatusId(inReplyToStatusId);
+				currentUser.setInReplyToUserId(inReplyToUserId);
+				currentUser.setSource(source);
+				currentUser.setStatusId(statusId);
+				currentUser.setText(text);
+				currentUser.setDelimiter(delimiter);
 				
 				if (currentUser.userExists()) {
 					new ModelThread(currentUser).start();
@@ -127,11 +152,19 @@ public class View extends JFrame {
 		JPanel settingsPanel = new JPanel();	// The panel that will hold our settings
 		
 		// Build checkbox components
+		JLabel delimiterLabel = new JLabel(Constants.DELIMITER_TEXT);
+		final JTextField delimiterTextField = new JTextField("§");
 		JCheckBox rtBox		= new JCheckBox( Constants.REMOVE_RT_TEXT, false );
 		JCheckBox spBox 	= new JCheckBox( Constants.REMOVE_SP_TEXT, false );
 		JCheckBox convoBox 	= new JCheckBox( Constants.REMOVE_CONVERSATION_TEXT, false );
 		JCheckBox linkBox 	= new JCheckBox( Constants.REMOVE_LINK_TEXT, false );
-		JCheckBox timeBox 	= new JCheckBox( Constants.PRINT_TIME_TEXT, false);
+		JCheckBox timeBox 	= new JCheckBox( Constants.PRINT_TIME_TEXT, true);
+		JCheckBox inReplyToScreenNameBox 	= new JCheckBox( Constants.IN_REPLY_TO_SCREEN_NAME_TEXT, false);
+		JCheckBox inReplyToStatusIdBox 	= new JCheckBox( Constants.IN_REPLY_TO_STATUS_ID_TEXT, false);
+		JCheckBox inReplyToUserIdBox 	= new JCheckBox( Constants.IN_REPLY_TO_USER_ID_TEXT, false);
+		JCheckBox sourceBox 	= new JCheckBox( Constants.SOURCE_TEXT, false);
+		JCheckBox statusIdBox 	= new JCheckBox( Constants.STATUS_ID_TEXT, false);
+		JCheckBox textBox 	= new JCheckBox( Constants.TEXT_TEXT, true);
 		
 		// Set up action listeners for checkboxes
 		rtBox.addActionListener(new ActionListener() {
@@ -174,19 +207,94 @@ public class View extends JFrame {
 			}
 		});
 		
+		inReplyToScreenNameBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				inReplyToScreenName = !inReplyToScreenName;
+				( ( JCheckBox ) e.getSource() ).setSelected( inReplyToScreenName );	// toggle selection
+			}
+		});
+		
+		inReplyToStatusIdBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				inReplyToStatusId = !inReplyToStatusId;
+				( ( JCheckBox ) e.getSource() ).setSelected( inReplyToStatusId );	// toggle selection
+			}
+		});
+		
+		inReplyToUserIdBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				inReplyToUserId = !inReplyToUserId;
+				( ( JCheckBox ) e.getSource() ).setSelected( inReplyToUserId );	// toggle selection
+			}
+		});
+		
+		sourceBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				source = !source;
+				( ( JCheckBox ) e.getSource() ).setSelected( source );	// toggle selection
+			}
+		});
+		
+		statusIdBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				statusId = !statusId;
+				( ( JCheckBox ) e.getSource() ).setSelected( statusId );	// toggle selection
+			}
+		});
+		
+		textBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				text = !text;
+				( ( JCheckBox ) e.getSource() ).setSelected( text );	// toggle selection
+			}
+		});
+		
+		delimiterTextField.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				delimiter = delimiterTextField.getText();
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				delimiter = delimiterTextField.getText();
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				delimiter = delimiterTextField.getText();
+			}
+		});
+		
+		
 		// Set layout for panel
 		//settingsPanel.setLayout(new BoxLayout(settingsPanel,BoxLayout.Y_AXIS));
-		settingsPanel.setLayout( new java.awt.GridLayout( 3, 2 ) ); // 3 rows, 2 columns
+		settingsPanel.setLayout( new java.awt.GridLayout( 7, 2 ) ); // 6 rows, 2 columns
 		settingsPanel.setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createEtchedBorder(), // Border style
 				Constants.SETTINGS_TEXT));			// Border title
 		
 		// add components to panel
+		settingsPanel.add(delimiterLabel);
+		settingsPanel.add(delimiterTextField);
 		settingsPanel.add(rtBox);
 		settingsPanel.add(spBox);
 		settingsPanel.add(convoBox);
 		settingsPanel.add(linkBox);
 		settingsPanel.add(timeBox);
+		settingsPanel.add(inReplyToScreenNameBox);
+		settingsPanel.add(inReplyToStatusIdBox);
+		settingsPanel.add(inReplyToUserIdBox);
+		settingsPanel.add(sourceBox);
+		settingsPanel.add(statusIdBox);
+		settingsPanel.add(textBox);
 				
 		return settingsPanel;
 	}
